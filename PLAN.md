@@ -25,7 +25,7 @@ rejection, structural dependencies, constraints, and non-execution behavior.
 - Preserve opaque, non-callable transformations as structural only.
 - Detect missing values and dependency cycles.
 
-## Phase 4 - Constraint evaluation and decision support (active)
+## Phase 4 - Constraint evaluation and decision support (complete)
 
 - Evaluate callable constraint rules against graph field values.
 - Return structured constraint violations for failed rules.
@@ -44,15 +44,28 @@ rejection, structural dependencies, constraints, and non-execution behavior.
 - Implemented correlation-based sensitivity analysis that ranks assumptions
   for a selected outcome and preserves correlation direction.
 
-## Next task
+## Phase 6 - Structured AI critique (complete)
 
-- Phase 6: define structured AI critique inputs and outputs, then add finance,
-  sales, and operations critic interfaces.
+- Added validated critique context, evidence, severity, confidence, and output
+  contracts.
+- Added statically distinct finance, sales, and operations critic interfaces.
+- Added a compact JSON provider payload that excludes raw trial outcomes.
+- Added provider-independent callable adapters and strict response parsing.
+- Added critique aggregation with one critic per domain, domain ownership
+  checks, and strongest-objection selection.
+- No external LLM is called by the domain layer. A concrete SDK integration can
+  be selected later without changing these contracts.
+
+## Roadmap status
+
+All phases currently approved in this roadmap are complete and covered by
+automated tests. Further phases are pending product review rather than active
+implementation scope.
 
 Run the current suite with:
 
 ```text
-python -m pytest -q -p no:cacheprovider test_graph.py test_simulation.py test_scenarios.py test_sensitivity.py
+python -m pytest -q
 ```
 
 Engine and future FastAPI backend use Python; the future dashboard uses
