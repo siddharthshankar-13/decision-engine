@@ -56,11 +56,33 @@ rejection, structural dependencies, constraints, and non-execution behavior.
 - No external LLM is called by the domain layer. A concrete SDK integration can
   be selected later without changing these contracts.
 
+## Phase 7 - Unified decision report (complete)
+
+- Combine a decision, assumptions, simulation results, scenario comparison,
+  sensitivity results, affected fields, impact paths, critiques, and key risks.
+- Calculate expected outcomes and positive/negative outcome probabilities.
+- Keep report construction separate from simulation execution.
+
+## Phase 8 - Backend API (pending)
+
+- Add a FastAPI application and validated decision, simulation, and report
+  endpoints after the Python report contract is stable.
+- Add persistence only after the API resource model is reviewed.
+
+## Phase 9 - MVP dashboard (pending)
+
+- Add a TypeScript/Next.js interface for decision entry, assumptions, outcome
+  charts, scenarios, sensitivity, graph impacts, critiques, and reports.
+- Keep decision math and simulation execution in Python.
+
+## Phase 10 - Demo decision (pending)
+
+- Model the fictional Acme SaaS pricing decision with realistic assumptions.
+- Demonstrate the complete assumption-to-simulation-to-impact-to-critique flow.
+
 ## Roadmap status
 
-All phases currently approved in this roadmap are complete and covered by
-automated tests. Further phases are pending product review rather than active
-implementation scope.
+Phases 1-7 are complete. Phase 8 is next; Phases 9-10 follow in order.
 
 Run the current suite with:
 

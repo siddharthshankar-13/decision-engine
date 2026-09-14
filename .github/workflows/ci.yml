@@ -26,6 +26,6 @@ jobs:
       - name: Compile modules
         run: >-
           python -m py_compile graph.py simulation.py scenarios.py sensitivity.py
-          critique.py critique_adapters.py critique_aggregation.py
+          critique.py critique_adapters.py critique_aggregation.py report.py
       - name: Run tests
         run: python -m pytest -q

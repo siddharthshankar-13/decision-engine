@@ -15,6 +15,7 @@ provider-independent and do not call an LLM yet.
 - `critique.py`: structured critique contracts and domain interfaces
 - `critique_adapters.py`: compact provider payloads and response validation
 - `critique_aggregation.py`: multi-domain critique validation and aggregation
+- `report.py`: unified decision report and derived outcome summaries
 
 ## Local development
 
