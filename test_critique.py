@@ -8,7 +8,7 @@ from critique import (
     CritiqueEvidence,
     CritiqueSeverity,
 )
-from simulation import Assumption, Decision, run_simulation
+from simulation import Assumption, Decision, SimulationResult, run_simulation
 
 
 def build_context() -> CritiqueContext:
@@ -105,3 +105,72 @@ def test_provider_specific_critic_can_implement_the_interface():
     result = critic.critique(build_context())
     assert result.domain is CriticDomain.FINANCE
     assert result.evidence[0].metric == "revenue"
+
+
+@pytest.mark.parametrize(
+    "factory, error",
+    [
+        (lambda context: CritiqueContext("not a decision", (), context.simulation_result), TypeError),
+        (lambda context: CritiqueContext(context.decision, ("bad",), context.simulation_result), TypeError),
+        (
+            lambda context: CritiqueContext(
+                context.decision,
+                (Assumption("x", 1), Assumption("x", 2)),
+                context.simulation_result,
+            ),
+            ValueError,
+        ),
+        (lambda context: CritiqueContext(context.decision, (), "bad result"), TypeError),
+        (
+            lambda context: CritiqueContext(
+                context.decision, context.assumptions, context.simulation_result, (" ",)
+            ),
+            ValueError,
+        ),
+    ],
+)
+def test_context_rejects_invalid_domain_data(factory, error):
+    with pytest.raises(error):
+        factory(build_context())
+
+
+def test_context_from_run_requires_a_typed_run():
+    with pytest.raises(TypeError, match="SimulationRun"):
+        CritiqueContext.from_run("not a run")
+
+
+@pytest.mark.parametrize(
+    "args, error",
+    [
+        (("", "p10", 1), ValueError),
+        (("profit", "", 1), ValueError),
+        (("profit", "p10", "high"), TypeError),
+    ],
+)
+def test_evidence_rejects_invalid_fields(args, error):
+    with pytest.raises(error):
+        CritiqueEvidence(*args)
+
+
+@pytest.mark.parametrize(
+    "changes, error",
+    [
+        ({"domain": "finance"}, TypeError),
+        ({"objection": " "}, ValueError),
+        ({"evidence": ("raw",)}, TypeError),
+        ({"severity": "high"}, TypeError),
+        ({"key_assumption": " "}, ValueError),
+    ],
+)
+def test_critique_rejects_unstructured_fields(changes, error):
+    values = {
+        "domain": CriticDomain.FINANCE,
+        "objection": "Profit downside is material.",
+        "evidence": (CritiqueEvidence("profit", "p10", -1),),
+        "severity": CritiqueSeverity.HIGH,
+        "confidence": 0.8,
+        "key_assumption": "churn",
+    }
+    values.update(changes)
+    with pytest.raises(error):
+        Critique(**values)

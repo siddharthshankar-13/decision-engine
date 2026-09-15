@@ -166,3 +166,77 @@ def test_report_rejects_non_summary_outcome_values():
     run = fixed_run()
     with pytest.raises(ValueError, match="Outcome keys"):
         DecisionReport(run, {"profit": "not a summary"})
+
+
+@pytest.mark.parametrize(
+    "args, message",
+    [
+        (("", 1, 1, 1, 1, 0.5, 0.5), "metric"),
+        (("profit", float("inf"), 1, 1, 1, 0.5, 0.5), "finite"),
+        (("profit", 1, 1, 1, 1, -0.1, 0.5), "between 0 and 1"),
+    ],
+)
+def test_outcome_summary_validates_fields(args, message):
+    with pytest.raises(ValueError, match=message):
+        OutcomeSummary(*args)
+
+
+def test_impact_path_rejects_blank_fields():
+    with pytest.raises(ValueError, match="non-empty"):
+        ImpactPath(("product.price", " "))
+
+
+def test_report_requires_a_simulation_run():
+    with pytest.raises(TypeError, match="SimulationRun"):
+        DecisionReport("not a run", {"profit": object()})
+
+
+def test_report_rejects_mismatched_outcome_metric_name():
+    summary = OutcomeSummary("revenue", 1, 1, 1, 1, 1, 0)
+    with pytest.raises(ValueError, match="Outcome keys"):
+        DecisionReport(fixed_run(), {"profit": summary})
+
+
+@pytest.mark.parametrize(
+    "keyword, value, message",
+    [
+        ("scenario_comparison", "bad", "ScenarioComparison"),
+        ("sensitivities", ("bad",), "SensitivityResult"),
+        ("affected_fields", ("profit", "profit"), "must be unique"),
+        ("impact_paths", ("bad",), "ImpactPath"),
+        ("critiques", "bad", "CritiqueCollection"),
+        ("key_risks", ("",), "non-empty"),
+        ("key_risks", ("risk", "risk"), "must be unique"),
+    ],
+)
+def test_report_rejects_invalid_optional_sections(keyword, value, message):
+    arguments = {keyword: value}
+    with pytest.raises((TypeError, ValueError), match=message):
+        build_decision_report(fixed_run(), **arguments)
+
+
+def test_report_rejects_duplicate_sensitivity_outcomes():
+    run = run_simulation(
+        Decision("Test"),
+        [Assumption("x", distribution=NormalDistribution(1, 0.1))],
+        lambda values: {"profit": values["x"]},
+        trials=10,
+        seed=1,
+    )
+    sensitivity = analyze_sensitivity(run, "profit")
+    with pytest.raises(ValueError, match="one sensitivity"):
+        build_decision_report(run, sensitivities=(sensitivity, sensitivity))
+
+
+def test_report_rejects_scenario_metrics_that_do_not_match():
+    run = fixed_run()
+    comparison = compare_scenarios(
+        run.decision,
+        [Assumption("x", 1)],
+        lambda values: {"revenue": values["x"]},
+        [Scenario("baseline")],
+        "baseline",
+        trials=1,
+    )
+    with pytest.raises(ValueError, match="Scenario metrics"):
+        build_decision_report(run, scenario_comparison=comparison)

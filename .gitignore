@@ -5,6 +5,7 @@ pytest-cache-files-*/
 .venv/
 .env
 .coverage
+coverage.xml
 htmlcov/
 .idea/
 .vscode/

@@ -28,4 +28,5 @@ python -m venv .venv
 ```
 
 GitHub Actions runs compilation and tests on Python 3.11 and 3.13 for every
-push and pull request.
+push and pull request targeting `main`. See `CI_CD.md` for branch protection,
+release, environment, and deployment recommendations.
