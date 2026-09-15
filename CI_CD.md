@@ -25,7 +25,7 @@ feature branch -> pull request -> CI -> review -> merge to main
 
 ## Continuous delivery and deployment
 
-Deployment should begin in Phase 8, after a runnable FastAPI application and a
+Deployment should begin in Phase 9, after a runnable FastAPI application and a
 hosting target exist. Keep deployment in a separate workflow so ordinary tests
 cannot accidentally deploy an incomplete service.
 
@@ -48,4 +48,4 @@ merge to main -> CI -> build immutable container -> staging -> smoke test
 The eventual deployment workflow needs decisions that cannot be encoded yet:
 the cloud/container host, image registry, production URL, database provider,
 and migration tool. Until those are chosen, CI is complete while CD remains a
-documented Phase 8 task.
+documented Phase 9 task.
